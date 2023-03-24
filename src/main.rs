@@ -42,6 +42,8 @@ impl Registry {
 }
 
 fn main() {
+    use ProviderResult::{NotImplemented as ResultNotImplemented, Success as ResultSuccess};
+
     let registry = build_registry();
 
     match registry.get(USER) {
@@ -53,7 +55,37 @@ fn main() {
 
     match registry.get(GROUP) {
         Some(builder) => {
-            let _ = builder.build().run();
+            let provider = builder.build();
+
+            match provider.init() {
+                Ok(res) => match res {
+                    ResultNotImplemented => println!("not implemented"),
+                    ResultSuccess(_) => println!("success"),
+                },
+                Err(err) => match err {
+                    ProviderError::NotImplemented => println!("not implemented"),
+                },
+            }
+
+            match provider.run() {
+                Ok(res) => match res {
+                    ResultNotImplemented => println!("not implemented"),
+                    ResultSuccess(_) => println!("success"),
+                },
+                Err(err) => match err {
+                    ProviderError::NotImplemented => println!("not implemented"),
+                },
+            }
+
+            match provider.exit() {
+                Ok(res) => match res {
+                    ResultNotImplemented => println!("not implemented"),
+                    ResultSuccess(_) => println!("success"),
+                },
+                Err(err) => match err {
+                    ProviderError::NotImplemented => println!("not implemented"),
+                },
+            }
         }
         None => panic!("invalid provider"),
     }
@@ -66,25 +98,36 @@ fn main() {
     }
 }
 
+pub enum ProviderResult<T> {
+    NotImplemented,
+    Success(T),
+}
+
 pub enum RunStatus {
-    Success,
-    Failure(RunReason),
-    Pending,
+    NoBalance,
+    LowAmount,
+    HighAmount,
 }
 
-pub enum RunReason {
-    InvalidCommand,
-}
+pub struct Init {}
 
-pub struct RunResult {}
+pub struct Run {}
 
-pub enum RunError {
+pub enum ProviderError {
     NotImplemented,
 }
 
 pub trait Provider {
-    fn run(&self) -> Result<RunResult, RunError> {
-        Err(RunError::NotImplemented)
+    fn init(&self) -> Result<ProviderResult<Init>, ProviderError> {
+        Err(ProviderError::NotImplemented)
+    }
+
+    fn run(&self) -> Result<ProviderResult<Run>, ProviderError> {
+        Err(ProviderError::NotImplemented)
+    }
+
+    fn exit(&self) -> Result<ProviderResult<Run>, ProviderError> {
+        Err(ProviderError::NotImplemented)
     }
 }
 
@@ -92,9 +135,9 @@ pub trait Provider {
 pub struct UserProvider {}
 
 impl Provider for UserProvider {
-    fn run(&self) -> Result<RunResult, RunError> {
+    fn run(&self) -> Result<ProviderResult<Run>, ProviderError> {
         println!("configuring user");
-        Ok(RunResult {})
+        Err(ProviderError::NotImplemented)
     }
 }
 
@@ -102,9 +145,9 @@ impl Provider for UserProvider {
 pub struct GroupProvider {}
 
 impl Provider for GroupProvider {
-    fn run(&self) -> Result<RunResult, RunError> {
+    fn run(&self) -> Result<ProviderResult<Run>, ProviderError> {
         println!("configure group");
-        Ok(RunResult {})
+        Err(ProviderError::NotImplemented)
     }
 }
 
@@ -112,9 +155,9 @@ impl Provider for GroupProvider {
 pub struct FileProvider {}
 
 impl Provider for FileProvider {
-    fn run(&self) -> Result<RunResult, RunError> {
+    fn run(&self) -> Result<ProviderResult<Run>, ProviderError> {
         println!("configure file");
-        Ok(RunResult {})
+        Err(ProviderError::NotImplemented)
     }
 }
 
