@@ -12,6 +12,26 @@ pub fn registry() -> HashMap<&'static str, Box<dyn Builder>> {
     ])
 }
 
+pub struct Registry {
+    entries: HashMap<String, Box<dyn Builder>>,
+}
+
+impl Registry {
+    fn new() -> Self {
+        Self {
+            entries: HashMap::new(),
+        }
+    }
+
+    fn find(&self, s: &String) -> Option<&Box<dyn Builder>> {
+        let builder = self.entries.get(s);
+        match builder {
+            Some(b) => Some(b),
+            None => panic!("invalid builder"),
+        }
+    }
+}
+
 fn main() {
     let reg = registry();
 
