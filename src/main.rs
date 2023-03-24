@@ -4,7 +4,7 @@ const USER: &str = "user";
 const GROUP: &str = "group";
 const FILE: &str = "file";
 
-pub fn registry() -> HashMap<&'static str, Box<dyn ProviderBuilder>> {
+pub fn build_registry() -> HashMap<&'static str, Box<dyn ProviderBuilder>> {
     HashMap::from([
         (
             USER,
@@ -42,28 +42,25 @@ impl Registry {
 }
 
 fn main() {
-    let reg = registry();
+    let registry = build_registry();
 
-    match reg.get(USER) {
+    match registry.get(USER) {
         Some(builder) => {
-            let provider = builder.build();
-            let _ = provider.run();
+            let _ = builder.build().run();
         }
         None => panic!("invalid provider"),
     }
 
-    match reg.get(GROUP) {
+    match registry.get(GROUP) {
         Some(builder) => {
-            let provider = builder.build();
-            let _ = provider.run();
+            let _ = builder.build().run();
         }
         None => panic!("invalid provider"),
     }
 
-    match reg.get(FILE) {
+    match registry.get(FILE) {
         Some(builder) => {
-            let provider = builder.build();
-            let _ = provider.run();
+            let _ = builder.build().run();
         }
         None => panic!("invalid provider"),
     }
