@@ -4,16 +4,25 @@ const USER: &str = "user";
 const GROUP: &str = "group";
 const FILE: &str = "file";
 
-pub fn registry() -> HashMap<&'static str, Box<dyn Builder>> {
+pub fn registry() -> HashMap<&'static str, Box<dyn ProviderBuilder>> {
     HashMap::from([
-        (USER, Box::new(UserBuilder::new()) as Box<dyn Builder>),
-        (GROUP, Box::new(GroupBuilder::new()) as Box<dyn Builder>),
-        (FILE, Box::new(FileBuilder::new()) as Box<dyn Builder>),
+        (
+            USER,
+            Box::new(UserBuilder::new()) as Box<dyn ProviderBuilder>,
+        ),
+        (
+            GROUP,
+            Box::new(GroupBuilder::new()) as Box<dyn ProviderBuilder>,
+        ),
+        (
+            FILE,
+            Box::new(FileBuilder::new()) as Box<dyn ProviderBuilder>,
+        ),
     ])
 }
 
 pub struct Registry {
-    entries: HashMap<String, Box<dyn Builder>>,
+    entries: HashMap<String, Box<dyn ProviderBuilder>>,
 }
 
 impl Registry {
@@ -23,7 +32,7 @@ impl Registry {
         }
     }
 
-    fn find(&self, s: &String) -> Option<&Box<dyn Builder>> {
+    fn find(&self, s: &String) -> Option<&Box<dyn ProviderBuilder>> {
         let builder = self.entries.get(s);
         match builder {
             Some(b) => Some(b),
@@ -112,7 +121,7 @@ impl Provider for FileProvider {
     }
 }
 
-pub trait Builder {
+pub trait ProviderBuilder {
     fn build(&self) -> Box<dyn Provider>;
 }
 
@@ -124,7 +133,7 @@ impl GroupBuilder {
     }
 }
 
-impl Builder for GroupBuilder {
+impl ProviderBuilder for GroupBuilder {
     fn build(&self) -> Box<dyn Provider> {
         Box::new(GroupProvider {})
     }
@@ -138,7 +147,7 @@ impl UserBuilder {
     }
 }
 
-impl Builder for UserBuilder {
+impl ProviderBuilder for UserBuilder {
     fn build(&self) -> Box<dyn Provider> {
         Box::new(UserProvider {})
     }
@@ -152,7 +161,7 @@ impl FileBuilder {
     }
 }
 
-impl Builder for FileBuilder {
+impl ProviderBuilder for FileBuilder {
     fn build(&self) -> Box<dyn Provider> {
         Box::new(FileProvider {})
     }
